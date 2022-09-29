@@ -79,8 +79,14 @@ vector<int> getUserNumber(){
     int userNum;
     vector<int> ret;
     
-    cout << "Введите число: " << endl;
-    cin >> userNum;
+    while(true){
+        cout << "Введите четырёхзначное число: " << endl;
+        cin >> userNum;
+        if (userNum <= 9876 && userNum >= 1023){
+            break;
+        }
+    }
+    
     while(userNum > 0){
         ret.push_back(userNum % 10);
         userNum /= 10;
