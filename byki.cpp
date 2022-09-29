@@ -1,45 +1,117 @@
 #include <iostream>
-#include <time.h>
+#include <cstdlib>
+#include <vector>
+#include <ctime>
 
 using namespace std;
 
-int* randNum();
-bool numMatch(int* array);
+//Функция генерации неповторяющихся цифр
+vector<int> initialDigits();
+
+//Функция ввода пользователем цифр
+vector<int> getUserNumber();
+
+//Функция проверки количества быков и коров
+vector<int> checkBullsAndCows(vector<int> vec1, vector<int> vec2);
+
+//Печать значений
+void printVector(vector<int> vec);
 
 int main()
 {
+    NewGame:
+    vector<int> bullsAndCows; //Массив для записи количества быков и коров
+    vector<int> sequence_nums; //Для генерации цифра
+    vector<int> sequence_user; //Пользовательские догадки
+    char repeatGame;
     
-
+    sequence_nums = initialDigits();
+    while(true){
+        sequence_user = getUserNumber();
+        
+        bullsAndCows = checkBullsAndCows(sequence_nums, sequence_user);
+        if (bullsAndCows[0] == 4)
+            break;
+            
+        cout << "быки: " << bullsAndCows[0] << "\nКоровы: " << bullsAndCows[1] << "\n" << endl;
+    }
+    
+    cout << "Загаданная последовательность: " << endl;
+    printVector(sequence_nums);
+    
+    while(true){
+        cout << "Хотите сыграть ещё раз? (y/n): ";
+        cin >> repeatGame;
+    
+        if (repeatGame == 'y')
+            goto NewGame;
+        else if (repeatGame == 'n'){
+            cout << "\nЛадно";
+            break;
+        }
+        else 
+            cout << "\nВведено неверное значение" << endl;
+    }
+    
     return 0;
 }
 
-int* randNum() {
-    ifNumDontFit:
+vector<int> initialDigits(){
     srand(time(0));
-    int* array = new int[4];
-    for (int i = 0; i < sizeof(array); i++){
-        array[i] = rand() % 9;
+    
+    vector<int> seq;
+    for (int i = 0; i < 10; i++){
+        seq.push_back(i);
+    }
+    
+    vector<int> ret;
+    for (int i = 0; i < 4; i++){
+        int position = rand() % seq.size(); //рандомная позиция элемента
         
-        for (int j = 0; j <= i; j++){
-            if (array[i] == array[j]){
-                goto ifNumDontFit;
+        ret.push_back(seq[position]);
+        seq.erase(seq.begin() + position);
+    }
+    
+    return ret;
+}
+
+vector<int> getUserNumber(){
+    int userNum;
+    vector<int> ret;
+    
+    cout << "Введите число: " << endl;
+    cin >> userNum;
+    while(userNum > 0){
+        ret.push_back(userNum % 10);
+        userNum /= 10;
+    }
+    reverse(ret.begin(), ret.end());
+    
+    return ret;
+}
+
+vector<int> checkBullsAndCows(vector<int> vec1, vector<int> vec2){
+    vector<int> ret(2); //0 - быки, 1 - коровы
+    
+    for (int i = 0; i < 4; i++){
+        for (int j = 0; j < 4; j++){
+            if (vec1[i] == vec2[j]){
+                if (i == j)
+                    ret[0] += 1;
+                else
+                    ret[1] += 1;
+                    
+                break;
             }
         }
     }
-    return array;
+    
+    return ret;
 }
 
-bool numMatch(int* array){
-    int userNum;
-    int* userArray = new int[4];
-    
-    cout << "Введите число: ";
-    cin >> userNum;
-    
-    while(true){
-        userArray.insert(userArray.begin(), userNum % 10);
-        userNum /= 10;
-    }
-    
-    
+void printVector(vector<int> vec){
+    vector<int>::iterator cur;
+    for (cur = vec.begin(); cur < vec.end(); cur++)
+        cout << *cur;
+    cout << "\n" << endl;
 }
